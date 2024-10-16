@@ -11,6 +11,8 @@ int inventario ()
 
 }
 
+
+
 int main ()
 {
 
