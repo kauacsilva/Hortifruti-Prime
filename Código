@@ -1,0 +1,18 @@
+/*************************PRIME HORTIFRUTI*************************/
+
+#include <stdio.h>
+#include <conio.h>
+#include <locale.h>
+
+setlocale (LC_ALL,"Portuguese");
+
+int inventario ()
+{
+
+}
+
+int main ()
+{
+
+getch;
+}
