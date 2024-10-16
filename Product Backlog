@@ -1,0 +1,27 @@
+~~~~~~~~SISTEMA~~~~~~~~
+
+Objetivo: Criação de um sistema composto por diversos programas em modo console, com o objetivo de otimizar as operações de um hortifruti.
+
+•Cadastro de Entrada no Estoque - Registrar o código do produto de acordo com seu tipo e valor.
+•Programa de Análise de Estoque - Identificar o código do produto e a quantidade recebida.
+•Fluxo de Caixa - Registrar as saídas do estoque.
+•Integração entre Estoque e Saídas - Automatizar a atualização das informações de saída no sistema de estoque.
+•Controle de Qualidade - Monitorar a validade dos produtos.
+•Otimização da Logística do Estoque - Melhorar a localização dos produtos dentro do estoque.
+•Análise de Custos e Lucros - Identificar automaticamente o balanço entre entradas e saídas.
+
+~~~~~~~~PROJETO~~~~~~~~
+
+- Resumo
+- Introdução
+- Linguagem e Técnicas de Programação
+- Engenharia de Software I
+- Fundamentos de Redes de Dados e Comunicação
+- Matemática para Computação
+- Ética e Legislação Profissional
+- Educação Ambiental
+- Desenvolvimento do Projeto
+- Caracterização do Ambiente de Estudo
+- Desenvolvimento
+- Conclusão
+- Referências
