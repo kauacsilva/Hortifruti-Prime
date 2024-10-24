@@ -4,17 +4,90 @@
 #include <conio.h>
 #include <locale.h>
 
-setlocale (LC_ALL,"Portuguese");
+// Estrutura para produtos
+typedef struct {
+    int codigo;
+    float preco;
+    int quantidade;
+} produto;
 
-int inventario ()
-{
-
-}
-
-
+// Estrutura para clientes
+typedef struct {
+    int idade;
+    char nome[50];
+    char endereco[100];
+} cliente;
 
 int main ()
 {
+    int opcao, login;
+    setlocale (LC_ALL,"Portuguese");
+
+
+        printf("\n*************************PRIME HORTIFRUTI*************************\n");
+
+do
+{
+    printf ("\n1.Administrador");
+    printf ("\n2.Caixa");
+    printf ("\n3.Encerrar\n");
+    printf ("\nOpção: ");
+
+    scanf("%d", &login);
+if (login == 1)
+{
+    do
+    {
+            printf("\n----- MENU ADMINISTRADOR -----\n");
+            printf("1. Cadastrar produto\n");
+            printf("2. Consultar estoque\n");
+            printf("3. Atualizar estoque\n");
+            printf("4. Cadastrar cliente\n");
+            printf("5. Cadastrar usuario\n");
+            printf("0. Sair\n");
+            printf("Escolha uma opcao: ");
+            scanf("%d", &opcao);
+
+        if (opcao > 5)
+        {
+           printf  ("\n\aOpção Inválida\a\n");
+        }
+    }
+            while (opcao != 0);
+
+    }
+    else if (login == 2)
+    {
+    do
+    {
+            printf("\n----- MENU CAIXA -----\n");
+            printf("1. Consultar estoque\n");
+            printf("2. Cadastrar cliente\n");
+            printf("0. Sair\n");
+            printf("Escolha uma opcao: ");
+            scanf("%d", &opcao);
+
+        if (opcao > 2)
+        {
+           printf  ("\n\aOpção Inválida\a\n");
+        }
+    }
+    while (opcao != 0);
+
+    }
+
+    else if (login == 3)
+    {
+            printf ("\nEncerrando\n");
+    }
+
+    else
+    {
+            printf ("\n\aOpção Inválida\a\n");
+    }
+
+}
+while (login != 3);
 
 getch;
 }
