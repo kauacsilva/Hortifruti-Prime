@@ -4,23 +4,196 @@
 #include <conio.h>
 #include <locale.h>
 
+// Estrutura para usuários
+typedef struct {
+    char nome[50];
+    char senha[20];
+    int cpf;
+} Usuario;
+
 // Estrutura para produtos
 typedef struct {
     int codigo;
     float preco;
     int quantidade;
-} produto;
+} item;
 
 // Estrutura para clientes
 typedef struct {
-    int idade;
+    int cpf;
+    int telefone;
     char nome[50];
     char endereco[100];
 } cliente;
 
+// Função para gerar código aleatório
+int gerarCodigo() {
+    return rand() % 10000; // Gera um número aleatório entre 0 e 9999
+}
+
+void cadastrarProduto() {
+    item produto;
+    FILE *arquivo;
+    int cont;
+
+    do
+    {
+    // Gera código aleatório para a mercadoria
+    produto.codigo = gerarCodigo();
+
+    // Abre o arquivo para adicionar novos dados
+    arquivo = fopen("Mercadorias.txt", "w");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo!\n");
+        exit(1);
+    }
+
+    // Captura os dados da mercadoria
+    printf("Codigo gerado para o produto: %d\n", produto.codigo);
+    printf("Digite o preco do produto: ");
+    scanf("%f", &produto.preco);
+    printf("Digite a quantidade em estoque: ");
+    scanf("%d", &produto.quantidade);
+
+    // Escreve os dados da mercadoria no arquivo
+    fprintf(arquivo, "Codigo: %d, Preco: %.2f, Quantidade: %d\n", produto.codigo, produto.preco, produto.quantidade);
+    fclose(arquivo);
+
+    printf("Produto cadastrado\n");
+    printf("Deseja continuar? [1] Sim [2] Não");
+    scanf ("%d", &cont);
+    }
+    while (cont == 1);
+}
+
+// Função para consultar o estoque
+void consultarEstoque() {
+    FILE *arquivo;
+    char linha[100];
+
+    // Abre o arquivo para leitura
+    arquivo = fopen("Mercadorias.txt", "r");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo!\n");
+        return;
+    }
+
+    printf("Produtos em estoque:\n");
+    // Lê e exibe cada linha do arquivo
+    while (fgets(linha, sizeof(linha), arquivo)) {
+        printf("%s", linha);
+    }
+
+    fclose(arquivo);
+}
+
+// Função para atualizar o estoque
+void atualizarEstoque() {
+    int codigoBusca, novaQuantidade, encontrado = 0;
+    item produto;
+    FILE *arquivo, *tempArquivo;
+
+    // Abre o arquivo original para leitura e o temporário para escrita
+    arquivo = fopen("inventario.txt", "r");
+    tempArquivo = fopen("temp.txt", "w");
+    if (arquivo == NULL || tempArquivo == NULL) {
+        printf("Erro ao abrir o arquivo!\n");
+        return;
+    }
+
+    printf("Digite o codigo do produto que deseja atualizar: ");
+    scanf("%d", &codigoBusca);
+
+    // Lê e processa cada linha do arquivo
+    while (fscanf(arquivo, "Codigo: %d, Preco: %f, Quantidade: %d\n", &produto.codigo, &produto.preco, &produto.quantidade) != EOF) {
+        if (produto.codigo == codigoBusca) {
+            printf("Produto encontrado! Quantidade atual: %d\n", produto.quantidade);
+            printf("Digite a nova quantidade: ");
+            scanf("%d", &novaQuantidade);
+            produto.quantidade = novaQuantidade;
+            encontrado = 1;
+        }
+        // Escreve no arquivo temporário (com ou sem atualização)
+        fprintf(tempArquivo, "Codigo: %d, Preco: %.2f, Quantidade: %d\n", produto.codigo, produto.preco, produto.quantidade);
+    }
+
+    fclose(arquivo);
+    fclose(tempArquivo);
+
+    // Substitui o arquivo original pelo atualizado
+    remove("Mercadorias.txt");
+    rename("temp.txt", "Mercadorias.txt");
+
+    if (encontrado)
+        printf("Estoque atualizado!\n");
+    else
+        printf("Produto nao encontrado!\n");
+}
+
+// Função para cadastrar clientes
+void cadastrarCliente() {
+    cliente cliente;
+    FILE *arquivo;
+
+    // Abre o arquivo para adicionar novos dados (modo "a")
+    arquivo = fopen("clientes.txt", "w");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo!\n");
+        exit(1);
+    }
+
+    // Captura os dados do cliente
+    printf("Digite o CPF do cliente: ");
+    scanf("%d", &cliente.cpf);
+    printf("Digite o telefone do cliente: ");
+    scanf("%d", &cliente.telefone);
+    printf("Digite o nome do cliente: ");
+    getchar();  // Limpar o buffer
+    fgets(cliente.nome, sizeof(cliente.nome), stdin);
+    cliente.nome[strcspn(cliente.nome, "\n")] = '\0'; // Remove o '\n' no final da string
+    printf("Digite o endereco do cliente: ");
+    fgets(cliente.endereco, sizeof(cliente.endereco), stdin);
+    cliente.endereco[strcspn(cliente.endereco, "\n")] = '\0'; // Remove o '\n'
+
+    // Escreve os dados do cliente no arquivo
+    fprintf(arquivo, "CPF: %d, Telefone: %d, Nome: %s, Endereco: %s\n", cliente.cpf, cliente.telefone, cliente.nome, cliente.endereco);
+    fclose(arquivo);
+
+    printf("Cliente cadastrado!\n");
+}
+
+// Função para cadastrar usuários
+void cadastrarUsuario() {
+    Usuario usuario;
+    FILE *arquivo;
+
+    // Abre o arquivo para adicionar novos dados (modo "a")
+    arquivo = fopen("usuarios.txt", "a");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo!\n");
+        exit(1);
+    }
+
+    // Captura os dados do usuário
+    printf("Digite o Nome: ");
+    scanf("%s", usuario.nome);
+    printf("Digite o CPF: ");
+    scanf("%d", usuario.cpf);
+    printf("Digite a senha: ");
+    scanf("%s", usuario.senha);
+
+    // Escreve os dados do usuário no arquivo
+    fprintf(arquivo, "Nome: %s, CPF: %d, Senha: %s\n", usuario.nome, usuario.cpf, usuario.senha);
+    fclose(arquivo);
+
+    printf("Usuario cadastrado!\n");
+}
+
+
 int main ()
 {
     int opcao, login;
+    int cont;
     setlocale (LC_ALL,"Portuguese");
 
 
@@ -48,9 +221,58 @@ if (login == 1)
             printf("Escolha uma opcao: ");
             scanf("%d", &opcao);
 
-        if (opcao > 5)
+        switch (opcao)
         {
-           printf  ("\n\aOpção Inválida\a\n");
+        case 1:
+            do {
+            printf ("\nCadastrar produto\n");
+            cadastrarProduto();
+            printf ("\nDeseja Continuar?[1] Sim [2] Não\n");
+            scanf ("%d",&cont);
+            }
+            while (cont == 1);
+            break;
+        case 2:
+            do {
+            printf ("\nConsultar estoque\n");
+            consultarEstoque();
+            printf ("\nDeseja Continuar?[1] Sim [2] Não\n");
+            scanf ("%d",&cont);
+            }
+            while (cont == 1);
+            break;
+        case 3:
+            do {
+            printf ("\nAtualizar estoque\n");
+            atualizarEstoque();
+            printf ("\nDeseja Continuar?[1] Sim [2] Não\n");
+            scanf ("%d",&cont);
+            }
+            while (cont == 1);
+            break;
+        case 4:
+            do {
+            printf ("\nCadastrar cliente\n");
+            cadastrarCliente();
+            printf ("\nDeseja Continuar?[1] Sim [2] Não\n");
+            scanf ("%d",&cont);
+            }
+            while (cont == 1);
+            break;
+        case 5:
+            do {
+            printf ("\nCadastrar usuario\n");
+            cadastrarUsuario();
+            printf ("\nDeseja Continuar?[1] Sim [2] Não\n");
+            scanf ("%d",&cont);
+            }
+            while (cont == 1);
+            break;
+        case 0:
+            printf("\nSaindo\n");
+            break;
+        default:
+            printf ("\nOpção Inválida\n");
         }
     }
             while (opcao != 0);
@@ -66,16 +288,14 @@ if (login == 1)
             printf("0. Sair\n");
             printf("Escolha uma opcao: ");
             scanf("%d", &opcao);
+            switch (opcao)
+            {
 
-        if (opcao > 2)
-        {
-           printf  ("\n\aOpção Inválida\a\n");
-        }
+            }
+
     }
     while (opcao != 0);
-
-    }
-
+}
     else if (login == 3)
     {
             printf ("\nEncerrando\n");
