@@ -14,7 +14,6 @@ typedef struct {
 // Estrutura para produtos
 typedef struct {
     int codigo;
-    int quantidade;
     float preco;
     char prod[25];
 } item;
@@ -53,11 +52,9 @@ void cadastrarProduto() {
     gets(produto.prod);
     printf("Digite o preco do produto: ");
     scanf("%f", &produto.preco);
-    printf("Digite a quantidade em estoque: ");
-    scanf("%i", &produto.quantidade);
 
     // Escreve os dados da mercadoria no arquivo
-    fprintf(arquivo, "Codigo: %i, Produto: %s, Preco: %.2f, Quantidade: %i\n", produto.codigo, produto.prod, produto.preco, produto.quantidade);
+    fprintf(arquivo, "Codigo: %i, Produto: %s, Preco: %.2f\n", produto.codigo, produto.prod, produto.preco);
     fclose(arquivo);
 
     printf("Produto cadastrado\n");
@@ -83,49 +80,6 @@ void consultarEstoque() {
     }
 
     fclose(arquivo);
-}
-
-// Função para atualizar o estoque
-void atualizarEstoque() {
-    int codigoBusca, novaQuantidade, encontrado = 0;
-    item produto;
-    FILE *arquivo, *tempArquivo;
-
-    // Abre o arquivo original para leitura e o temporário para escrita
-    arquivo = fopen("Mercadorias.txt", "r");
-    tempArquivo = fopen("temp.txt", "a");
-    if (arquivo == NULL || tempArquivo == NULL) {
-        printf("Erro ao abrir o arquivo!\n");
-        return;
-    }
-
-    printf("Digite o codigo do produto que deseja atualizar: ");
-    scanf("%i", &codigoBusca);
-
-    // Lê e processa cada linha do arquivo
-    while (fscanf(arquivo, "Codigo: %i, Produto %s,Preco: %f, Quantidade: %i\n", &produto.codigo, &produto.prod, &produto.preco, &produto.quantidade) != EOF) {
-        if (produto.codigo == codigoBusca) {
-            printf("Produto encontrado! Quantidade atual: %d\n", produto.quantidade);
-            printf("Digite a nova quantidade: ");
-            scanf("%i", &novaQuantidade);
-            produto.quantidade = novaQuantidade;
-            encontrado = 1;
-        }
-        // Escreve no arquivo temporário (com ou sem atualização)
-        fprintf(tempArquivo, "Codigo: %i, Produto: %s, Preco: %.2f, Quantidade: %i\n", produto.codigo, produto.prod, produto.preco, produto.quantidade);
-    }
-
-    fclose(arquivo);
-    fclose(tempArquivo);
-
-    // Substitui o arquivo original pelo atualizado
-    remove("Mercadorias.txt");
-    rename("temp.txt", "Mercadorias.txt");
-
-    if (encontrado)
-        printf("Estoque atualizado!\n");
-    else
-        printf("Produto nao encontrado!\n");
 }
 
 // Função para cadastrar clientes
@@ -166,6 +120,45 @@ void cadastrarCliente() {
     }
     while (cont == 1);
 }
+
+// Função para realizar venda
+void realizarVenda() {
+    int quantidadeVenda, cont;
+    float total = 0;
+    float valorProduto;
+    FILE *arquivo;
+    char linha[100];
+
+    // Abre o arquivo para leitura
+    arquivo = fopen("Mercadorias.txt", "r");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo!\n");
+        return;
+    }
+    limparTela ();
+    printf("Produtos em estoque:\n");
+    // Lê e exibe cada linha do arquivo
+    while (fgets(linha, sizeof(linha), arquivo)) {
+        printf("%s", linha);
+    }
+
+    fclose(arquivo);
+
+    do {
+    printf ("\nDigite o valor do produto: ");
+    scanf ("%f", &valorProduto);
+    printf ("\nDigite a quantidade vendida: ");
+    scanf ("%i", &quantidadeVenda);
+    total = (valorProduto * quantidadeVenda) + total;
+
+
+    printf ("\nDeseja continuar? [1] Sim [2] Não\n");
+    scanf ("%d",&cont);
+    }
+    while (cont == 1);
+    printf ("O valor total: %.2f", total);
+}
+
 
 // Função senha Administrador
 int senhaAdm (int senha1) {
@@ -224,8 +217,7 @@ else
             printf("\n----- MENU ADMINISTRADOR -----\n");
             printf("1. Cadastrar produto\n");
             printf("2. Consultar estoque\n");
-            printf("3. Atualizar estoque\n");
-            printf("4. Cadastrar cliente\n");
+            printf("3. Cadastrar cliente\n");
             printf("0. Sair\n");
             printf("Escolha uma opcao: ");
             scanf("%d", &opcao);
@@ -255,17 +247,6 @@ else
             while (cont == 1);
             break;
         case 3:
-            do {
-        limparTela();
-        printf("\n*************************PRIME HORTIFRUTI*************************\n");
-            printf ("\nAtualizar estoque\n");
-            atualizarEstoque();
-            printf ("\nDeseja Continuar?[1] Sim [2] Não\n");
-            scanf ("%d",&cont);
-            }
-            while (cont == 1);
-            break;
-        case 4:
             do {
         limparTela();
         printf("\n*************************PRIME HORTIFRUTI*************************\n");
@@ -312,6 +293,7 @@ else
             printf("\n----- MENU CAIXA -----\n");
             printf("1. Consultar estoque\n");
             printf("2. Cadastrar cliente\n");
+            printf("3. Realizar venda\n");
             printf("0. Sair\n");
             printf("Escolha uma opcao: ");
             scanf("%d", &opcao);
@@ -335,6 +317,17 @@ else
             printf ("\nCadastrar cliente\n");
             cadastrarCliente();
             printf ("\nDeseja Continuar?[1] Sim [2] Não\n");
+            scanf ("%d",&cont);
+            }
+            while (cont == 1);
+            break;
+            case 3:
+            do {
+        limparTela();
+        printf("\n*************************PRIME HORTIFRUTI*************************\n");
+            printf ("\nRealizar Venda\n");
+            realizarVenda();
+            printf ("\n\nVoltar ao menu?[1] Sim [2] Não\n");
             scanf ("%d",&cont);
             }
             while (cont == 1);
