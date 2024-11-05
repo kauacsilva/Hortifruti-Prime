@@ -4,90 +4,371 @@
 #include <conio.h>
 #include <locale.h>
 
+// Estrutura para usuários
+typedef struct {
+    char nome[50];
+    int senha;
+    int cpf;
+} User;
+
 // Estrutura para produtos
 typedef struct {
     int codigo;
-    float preco;
     int quantidade;
-} produto;
+    float preco;
+    char prod[25];
+} item;
 
 // Estrutura para clientes
 typedef struct {
-    int idade;
+    int cpf;
+    int telefone;
     char nome[50];
     char endereco[100];
 } cliente;
 
+// Função para gerar código aleatório
+int gerarCodigo() {
+    return rand() % 10000; // Gera um número aleatório entre 0 e 9999
+}
+
+void cadastrarProduto() {
+    item produto;
+    FILE *arquivo;
+
+    // Gera código aleatório para a mercadoria
+    produto.codigo = gerarCodigo();
+
+    // Abre o arquivo para adicionar novos dados
+    arquivo = fopen("Mercadorias.txt", "a");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo!\n");
+        exit(1);
+    }
+
+    // Captura os dados da mercadoria
+    printf("Codigo gerado para o produto: %i\n", produto.codigo);
+    printf("Digite o nome do produto: ");
+    fflush(stdin);
+    gets(produto.prod);
+    printf("Digite o preco do produto: ");
+    scanf("%f", &produto.preco);
+    printf("Digite a quantidade em estoque: ");
+    scanf("%i", &produto.quantidade);
+
+    // Escreve os dados da mercadoria no arquivo
+    fprintf(arquivo, "Codigo: %i, Produto: %s, Preco: %.2f, Quantidade: %i\n", produto.codigo, produto.prod, produto.preco, produto.quantidade);
+    fclose(arquivo);
+
+    printf("Produto cadastrado\n");
+
+}
+
+// Função para consultar o estoque
+void consultarEstoque() {
+    FILE *arquivo;
+    char linha[100];
+
+    // Abre o arquivo para leitura
+    arquivo = fopen("Mercadorias.txt", "r");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo!\n");
+        return;
+    }
+
+    printf("Produtos em estoque:\n");
+    // Lê e exibe cada linha do arquivo
+    while (fgets(linha, sizeof(linha), arquivo)) {
+        printf("%s", linha);
+    }
+
+    fclose(arquivo);
+}
+
+// Função para atualizar o estoque
+void atualizarEstoque() {
+    int codigoBusca, novaQuantidade, encontrado = 0;
+    item produto;
+    FILE *arquivo, *tempArquivo;
+
+    // Abre o arquivo original para leitura e o temporário para escrita
+    arquivo = fopen("Mercadorias.txt", "r");
+    tempArquivo = fopen("temp.txt", "a");
+    if (arquivo == NULL || tempArquivo == NULL) {
+        printf("Erro ao abrir o arquivo!\n");
+        return;
+    }
+
+    printf("Digite o codigo do produto que deseja atualizar: ");
+    scanf("%i", &codigoBusca);
+
+    // Lê e processa cada linha do arquivo
+    while (fscanf(arquivo, "Codigo: %i, Produto %s,Preco: %f, Quantidade: %i\n", &produto.codigo, &produto.prod, &produto.preco, &produto.quantidade) != EOF) {
+        if (produto.codigo == codigoBusca) {
+            printf("Produto encontrado! Quantidade atual: %d\n", produto.quantidade);
+            printf("Digite a nova quantidade: ");
+            scanf("%i", &novaQuantidade);
+            produto.quantidade = novaQuantidade;
+            encontrado = 1;
+        }
+        // Escreve no arquivo temporário (com ou sem atualização)
+        fprintf(tempArquivo, "Codigo: %i, Produto: %s, Preco: %.2f, Quantidade: %i\n", produto.codigo, produto.prod, produto.preco, produto.quantidade);
+    }
+
+    fclose(arquivo);
+    fclose(tempArquivo);
+
+    // Substitui o arquivo original pelo atualizado
+    remove("Mercadorias.txt");
+    rename("temp.txt", "Mercadorias.txt");
+
+    if (encontrado)
+        printf("Estoque atualizado!\n");
+    else
+        printf("Produto nao encontrado!\n");
+}
+
+// Função para cadastrar clientes
+void cadastrarCliente() {
+    int cont;
+    cliente cliente;
+    FILE *arquivo;
+
+    do {
+    // Abre o arquivo para adicionar novos dados
+    arquivo = fopen("clientes.txt", "a");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo!\n");
+        exit(1);
+    }
+
+    // Captura os dados do cliente
+    printf("\nDigite o CPF do cliente: ");
+    scanf("%i", &cliente.cpf);
+    printf("Digite o telefone do cliente: ");
+    scanf("%i", &cliente.telefone);
+    printf("Digite o nome do cliente: ");
+    getchar();  // Limpar o buffer
+    fgets(cliente.nome, sizeof(cliente.nome), stdin);
+    cliente.nome[strcspn(cliente.nome, "\n")] = '\0'; // Remove o '\n' no final da string
+    printf("Digite o endereco do cliente: ");
+    fgets(cliente.endereco, sizeof(cliente.endereco), stdin);
+    cliente.endereco[strcspn(cliente.endereco, "\n")] = '\0'; // Remove o '\n'
+
+    // Escreve os dados do cliente no arquivo
+    fprintf(arquivo, "CPF: %i, Telefone: %i, Nome: %s, Endereco: %s\n", cliente.cpf, cliente.telefone, cliente.nome, cliente.endereco);
+    fclose(arquivo);
+
+    printf("Cliente cadastrado!\n");
+
+    printf("Deseja continuar? [1] Sim [2] Não");
+    scanf ("%i", &cont);
+    }
+    while (cont == 1);
+}
+
+// Função senha Administrador
+int senhaAdm (int senha1) {
+    senha1 = 1234;
+
+    return senha1;
+}
+
+// Função senha caixa
+int senhaCaixa (int senha2) {
+    senha2 = 9876;
+
+    return senha2;
+}
+
+// Função para limpar tela
+void limparTela() {
+    // Comando para limpar a tela
+    system("cls");
+}
+
 int main ()
 {
     int opcao, login;
+    int cont, senha;
     setlocale (LC_ALL,"Portuguese");
-
-
-        printf("\n*************************PRIME HORTIFRUTI*************************\n");
 
 do
 {
+    limparTela ();
+    printf("\n*************************PRIME HORTIFRUTI*************************\n");
     printf ("\n1.Administrador");
     printf ("\n2.Caixa");
     printf ("\n3.Encerrar\n");
-    printf ("\nOpção: ");
-
+    printf ("\nEscolha uma Opção: ");
     scanf("%d", &login);
+
 if (login == 1)
 {
-    do
+    limparTela();
+printf("\n*************************PRIME HORTIFRUTI*************************\n");
+    printf ("\nMenu Administrador");
+    printf ("\nDigite a senha: ");
+    scanf ("%i", &senha);
+
+    if(senha != senhaAdm(senha))
+{
+    printf ("\nSenha Incorreta!\n");
+
+}
+else
     {
+    do {
+    limparTela();
+        printf("\n*************************PRIME HORTIFRUTI*************************\n");
             printf("\n----- MENU ADMINISTRADOR -----\n");
             printf("1. Cadastrar produto\n");
             printf("2. Consultar estoque\n");
             printf("3. Atualizar estoque\n");
             printf("4. Cadastrar cliente\n");
-            printf("5. Cadastrar usuario\n");
             printf("0. Sair\n");
             printf("Escolha uma opcao: ");
             scanf("%d", &opcao);
 
-        if (opcao > 5)
+        switch (opcao)
         {
-           printf  ("\n\aOpção Inválida\a\n");
+        case 1:
+            do {
+        limparTela();
+        printf("\n*************************PRIME HORTIFRUTI*************************\n");
+            printf ("\nCadastrar produto\n");
+            cadastrarProduto();
+            printf ("\nDeseja Continuar?[1] Sim [2] Não\n");
+            scanf ("%d",&cont);
+            }
+            while (cont == 1);
+            break;
+        case 2:
+            do {
+        limparTela();
+        printf("\n*************************PRIME HORTIFRUTI*************************\n");
+            printf ("\nConsultar estoque\n");
+            consultarEstoque();
+            printf ("\nDeseja Continuar?[1] Sim [2] Não\n");
+            scanf ("%d",&cont);
+            }
+            while (cont == 1);
+            break;
+        case 3:
+            do {
+        limparTela();
+        printf("\n*************************PRIME HORTIFRUTI*************************\n");
+            printf ("\nAtualizar estoque\n");
+            atualizarEstoque();
+            printf ("\nDeseja Continuar?[1] Sim [2] Não\n");
+            scanf ("%d",&cont);
+            }
+            while (cont == 1);
+            break;
+        case 4:
+            do {
+        limparTela();
+        printf("\n*************************PRIME HORTIFRUTI*************************\n");
+            printf ("\nCadastrar cliente\n");
+            cadastrarCliente();
+            printf ("\nDeseja Continuar?[1] Sim [2] Não\n");
+            scanf ("%d",&cont);
+            }
+            while (cont == 1);
+            break;
+        case 0:
+        limparTela();
+        printf("\n*************************PRIME HORTIFRUTI*************************\n");
+            printf("\nSaindo\n");
+            break;
+        default:
+        limparTela();
+        printf("\n*************************PRIME HORTIFRUTI*************************\n");
+            printf ("\nOpção Inválida\n");
         }
     }
-            while (opcao != 0);
-
+    while (opcao != 0);
     }
+    }
+
     else if (login == 2)
-    {
+{
+    limparTela ();
+    printf("\n*************************PRIME HORTIFRUTI*************************\n");
+    printf ("\nMenu Caixa");
+    printf ("\nDigite a senha: ");
+    scanf ("%i", &senha);
+
+    if(senha != senhaCaixa(senha))
+{
+    printf ("\nSenha Incorreta!\n");
+
+
+}   else {
     do
     {
+        limparTela();
+        printf("\n*************************PRIME HORTIFRUTI*************************\n");
             printf("\n----- MENU CAIXA -----\n");
             printf("1. Consultar estoque\n");
             printf("2. Cadastrar cliente\n");
             printf("0. Sair\n");
             printf("Escolha uma opcao: ");
             scanf("%d", &opcao);
+            switch (opcao)
+            {
+        case 1:
+            do {
+        limparTela();
+        printf("\n*************************PRIME HORTIFRUTI*************************\n");
+            printf ("\nConsultar estoque\n");
+            consultarEstoque();
+            printf ("\nDeseja Continuar?[1] Sim [2] Não\n");
+            scanf ("%d",&cont);
+            }
+            while (cont == 1);
+            break;
+        case 2:
+            do {
+        limparTela();
+        printf("\n*************************PRIME HORTIFRUTI*************************\n");
+            printf ("\nCadastrar cliente\n");
+            cadastrarCliente();
+            printf ("\nDeseja Continuar?[1] Sim [2] Não\n");
+            scanf ("%d",&cont);
+            }
+            while (cont == 1);
+            break;
+        case 0:
+        limparTela();
+        printf("\n*************************PRIME HORTIFRUTI*************************\n");
+            printf("\nSaindo\n");
+            break;
+            default:
+        printf("\n*************************PRIME HORTIFRUTI*************************\n");
+            printf ("\nOpção Inválida\n");
+            }
 
-        if (opcao > 2)
-        {
-           printf  ("\n\aOpção Inválida\a\n");
-        }
-    }
+   }
     while (opcao != 0);
-
-    }
-
+}
+}
     else if (login == 3)
-    {
+{
+        limparTela();
+        printf("\n*************************PRIME HORTIFRUTI*************************\n");
             printf ("\nEncerrando\n");
     }
 
     else
-    {
+{
+        limparTela();
             printf ("\n\aOpção Inválida\a\n");
     }
-
-}
+    }
 while (login != 3);
+
+
 
 getch;
 }
