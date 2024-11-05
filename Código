@@ -147,16 +147,18 @@ void realizarVenda() {
     do {
     printf ("\nDigite o valor do produto: ");
     scanf ("%f", &valorProduto);
-    printf ("\nDigite a quantidade vendida: ");
+    printf ("Digite a quantidade vendida: ");
     scanf ("%i", &quantidadeVenda);
     total = (valorProduto * quantidadeVenda) + total;
-
+    printf ("\nO valor total: %.2f\n", total);
 
     printf ("\nDeseja continuar? [1] Sim [2] Não\n");
+    printf ("Escolha uma opção: ");
     scanf ("%d",&cont);
+
     }
     while (cont == 1);
-    printf ("O valor total: %.2f", total);
+    printf ("\nO valor total da venda: %.2f", total);
 }
 
 
