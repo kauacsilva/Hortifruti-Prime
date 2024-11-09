@@ -1,0 +1,33 @@
+Requisitos funcionais:
+Cadastro de inventário
+- Código do tipo de produto
+- Custo de precificação
+- Venda de Precificação
+
+Controle de Estoque
+- Data de Recebimento
+- Quantidade disponível
+- Cadastro de validade
+
+Fluxo de saída de Caixa 
+- Data de saída
+- Valor de transação 
+- Registro do cliente
+
+Requisitos Não Funcionais:
+Desempenho
+- Resposta Rápida
+- Capacidade de lidar com múltiplos usuário
+Segurança
+- Proteção contra acesso não autorizado
+- Segurança no banco de dados
+Usabilidade
+- Interface intuitiva
+- Facilidade na navegação
+Confiabilidade
+- Sistema estável e sem erros 
+- Recuperação de dados em casos de falhas
+Manutenção
+- Fácil atualização e manutenção 
+Compatibilidade 
+- Compatível com diferentes sistemas operacionais
